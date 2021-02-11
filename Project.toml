@@ -1,0 +1,4 @@
+name = "Quarto"
+uuid = "d7167be5-f61b-4dc9-b75c-ab62374668c5"
+authors = ["JJ Allaire <jj@rstudio.com>"]
+version = "0.1.0"
