@@ -4,16 +4,29 @@ module Quarto
 
 import JSON
 
-function render(input::AbstractString)
+
+
+function render(input::AbstractString;
+                output_format::Union{Nothing,AbstractString} = nothing)
 
   # quarto binary
-  quarto_bin = find_quarto()
+  quarto_bin = Quarto.path()
+  if isnothing(quarto_bin) 
+    throw(ErrorException("Unable to find quarto command line tools."))
+  end
 
   # alias input for linter
   target = input
 
+  # args array 
+  args = []
+  if !isnothing(output_format)
+    push!(args, "--to")
+    push!(args, output_format)
+  end
+
   # run render
-  cmd = `$quarto_bin render $target`
+  cmd = `$quarto_bin render $target $args`
   run(cmd)
 
   # return 
@@ -23,7 +36,10 @@ end
 
 function metadata(input::AbstractString)
   # quarto binary
-  quarto_bin = find_quarto()
+  quarto_bin = Quarto.path()
+  if isnothing(quarto_bin) 
+    throw(ErrorException("Unable to find quarto command line tools."))
+  end
 
   # alias input for linter
   target = input
@@ -49,12 +65,3 @@ end
 
 
 end # module
-
-function find_quarto()
-  path = Quarto.path()
-  if isnothing(path)
-    throw(ErrorException("Unable to find quarto command line tools."))
-  else
-    return path
-  end
-end
