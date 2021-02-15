@@ -3,13 +3,13 @@
 module Quarto
 
 import JSON
-
-
+import YAML
 
 function render(input::AbstractString;
                 output_format::Union{Nothing,AbstractString} = nothing,
                 output_file::Union{Nothing,AbstractString} = nothing,
                 execute::Bool = true,
+                execute_params::Union{Nothing,Dict} = nothing,
                 execute_dir::Union{Nothing,AbstractString} = nothing,
                 cache::Union{Nothing,Bool} = nothing,
                 cache_refresh::Bool = false,
@@ -41,7 +41,12 @@ function render(input::AbstractString;
   if execute 
     push!(args, "--execute")
   end
-  # TODO: execute params
+  if (!isnothing(execute_params))
+    yaml_file = tempname()
+    YAML.write_file(yaml_file, execute_params)
+    push!(args, "--execute-params")
+    push!(args, yaml_file)
+  end
   if !isnothing(execute_dir)
     push!(args, "--execute-dir")
     push!(args, execute_dir)
